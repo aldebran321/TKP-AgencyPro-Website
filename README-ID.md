@@ -4,9 +4,11 @@ Website pemasaran statis dengan tema Midnight Navy, Champagne Gold, Premium Glas
 
 ## Struktur
 - `index.html` — halaman utama.
-- `login.html` — formulir login web premium.
+- `login.html` — formulir login web premium dengan latar Midnight Navy.
+- `dashboard.html` — dashboard website setelah login berhasil.
+- `dashboard.js`, `dashboard.css` — pemeriksaan sesi/profil dan tampilan dashboard.
 - `config.js` — URL dan publishable key Supabase serta URL Flutter Web.
-- `login.js` — login email/nomor HP, validasi profil, sesi browser, dan reset password via email.
+- `login.js` — login email/nomor HP, validasi profil, redirect dashboard, sesi browser, dan reset password via email.
 - `styles.css`, `login.css`, `script.js` — tampilan dan interaksi.
 - `assets/mark.svg` — favicon.
 
@@ -34,3 +36,8 @@ SSO lintas aplikasi membutuhkan implementasi callback/deep-link satu kali pakai 
 
 ## Deploy Cloudflare Pages
 File `index.html` berada di root project. Framework preset `None`; Build output directory `.`. Build command `exit 0` dapat dipakai untuk konfigurasi statis yang sebelumnya memerlukan perintah build.
+
+## Alur dashboard website
+Setelah Supabase Auth berhasil dan profil pada tabel `profiles` lolos pemeriksaan `approval_status`, `is_active`, dan role yang diizinkan, website mengarahkan pengguna ke `dashboard.html`. Dashboard memeriksa ulang sesi dan profil sebelum menampilkan nama, email/nomor akun, serta role. Tombol Keluar mengakhiri sesi website.
+
+Kartu modul pada dashboard adalah fondasi tampilan, bukan klaim bahwa fitur analitik, pengelolaan tim, atau Multi Company telah terhubung ke tabel operasional. Tidak ada perubahan skema database, kebijakan RLS, maupun file aplikasi Android dalam paket ini.

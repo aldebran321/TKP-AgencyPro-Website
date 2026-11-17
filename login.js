@@ -86,12 +86,10 @@
         throw new Error('Role akun tidak dikenali. Hubungi administrator.');
       }
 
-      showStatus(`Login berhasil. Selamat datang${profile.full_name ? `, ${profile.full_name}` : ''}. Status akun dan role berhasil diverifikasi. Sesi tersimpan pada browser ini.`, 'success');
-      if (config.APP_URL && /^https:\/\//i.test(config.APP_URL)) {
-        continueApp.href = config.APP_URL;
-        continueApp.hidden = false;
-      }
+      showStatus(`Login berhasil. Selamat datang${profile.full_name ? `, ${profile.full_name}` : ''}. Mengalihkan ke dashboard...`, 'success');
       passwordInput.value = '';
+      // Arahkan setelah sesi dan profil benar-benar tervalidasi.
+      window.location.replace('dashboard.html');
     } catch (error) {
       const message = error?.message || 'Login gagal. Periksa koneksi dan data akun Anda.';
       showStatus(message, 'error');
