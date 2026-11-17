@@ -1,15 +1,69 @@
 <!doctype html>
 <html lang="id">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#101b2e">
-  <title>Login Aplikasi — TKP AgencyPro</title><link rel="icon" href="assets/mark.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="login.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101b2e">
+  <meta name="description" content="Masuk ke TKP AgencyPro menggunakan akun perusahaan Anda.">
+  <title>Login — TKP AgencyPro</title>
+  <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="login.css">
 </head>
 <body class="login-page">
-  <main class="login-shell">
-    <a class="brand" href="index.html"><span class="brand-mark">T</span><span class="brand-name">TKP <b>AGENCYPRO</b><small>BUSINESS MANAGEMENT PLATFORM</small></span></a>
-    <section class="login-card"><div class="login-symbol">↗</div><div class="section-kicker">APPLICATION ACCESS</div><h1>Masuk ke<br><em>ruang kerja Anda.</em></h1><p>Anda akan diarahkan ke aplikasi TKP AgencyPro yang terhubung dengan akun dan data perusahaan Anda.</p><div id="status" class="status">Alamat aplikasi belum dikonfigurasi.</div><a id="app-link" class="btn btn-gold disabled" href="#" aria-disabled="true">Aplikasi belum terhubung</a><a class="back-link" href="index.html">← Kembali ke website</a></section>
-    <footer>© <span id="year"></span> TKP AgencyPro</footer>
+  <main class="login-layout">
+    <section class="login-story" aria-label="Informasi TKP AgencyPro">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">T</span>
+        <span class="brand-name">TKP <b>AGENCYPRO</b><small>BUSINESS MANAGEMENT PLATFORM</small></span>
+      </a>
+      <div class="story-content">
+        <div class="eyebrow"><i></i> SECURE WORKSPACE ACCESS</div>
+        <h1>Satu akun.<br><em>Satu ekosistem.</em></h1>
+        <p>Masuk ke ruang kerja AgencyPro untuk mengelola perusahaan, tim, aktivitas operasional, dan performa bisnis.</p>
+        <div class="story-points">
+          <span><i>✓</i> Akses berdasarkan peran pengguna</span>
+          <span><i>✓</i> Workspace Multi Company</span>
+          <span><i>✓</i> Autentikasi melalui Supabase</span>
+        </div>
+      </div>
+      <div class="story-foot">ONE PLATFORM. MULTIPLE COMPANIES. COMPLETE CONTROL.</div>
+    </section>
+
+    <section class="login-panel">
+      <div class="login-card">
+        <a class="mobile-brand brand" href="index.html"><span class="brand-mark">T</span><span class="brand-name">TKP <b>AGENCYPRO</b><small>BUSINESS MANAGEMENT PLATFORM</small></span></a>
+        <div class="section-kicker">WELCOME BACK</div>
+        <h2>Masuk ke<br><em>ruang kerja Anda.</em></h2>
+        <p class="login-intro">Gunakan email atau nomor HP dan password akun AgencyPro Anda.</p>
+
+        <form id="login-form" novalidate>
+          <label for="identity">Email atau Nomor HP (+62)</label>
+          <input id="identity" name="identity" type="text" autocomplete="username" inputmode="email" placeholder="nama@perusahaan.com atau 08xxxxxxxxxx" required>
+
+          <div class="password-label"><label for="password">Password</label><button type="button" id="forgot-password" class="text-button">Lupa password?</button></div>
+          <div class="password-wrap">
+            <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Masukkan password" required>
+            <button type="button" id="toggle-password" class="password-toggle" aria-label="Tampilkan password" aria-pressed="false">Lihat</button>
+          </div>
+
+          <button id="submit-login" class="btn btn-gold login-submit" type="submit"><span id="submit-label">Masuk ke AgencyPro</span><span aria-hidden="true">↗</span></button>
+        </form>
+
+        <div id="login-status" class="login-status" role="status" aria-live="polite">Gunakan email dan password akun AgencyPro Anda.</div>
+        <a id="continue-app" class="btn btn-outline continue-app" href="#" hidden>Buka aplikasi AgencyPro ↗</a>
+        <div class="login-divider"><span></span><small>SECURE ACCOUNT ACCESS</small><span></span></div>
+        <a class="back-link" href="index.html">← Kembali ke website</a>
+      </div>
+      <footer>© <span id="year"></span> TKP AgencyPro. All rights reserved.</footer>
+    </section>
   </main>
-  <script src="config.js"></script><script src="login.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="login.js"></script>
 </body>
 </html>

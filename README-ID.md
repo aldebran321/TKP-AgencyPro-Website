@@ -1,29 +1,36 @@
-# TKP AgencyPro Official Website — Starter v1
+# TKP AgencyPro Official Website — Web Login
 
-Website profil/pemasaran resmi dengan tema Midnight Navy, Champagne Gold, Premium Glass, dan Ivory. Website statis ini terpisah dari source Flutter aplikasi existing.
+Website pemasaran statis dengan tema Midnight Navy, Champagne Gold, Premium Glass, dan Ivory. Login web memakai project Supabase yang sama dengan aplikasi Flutter AgencyPro.
 
-## Isi
-- `index.html` — halaman utama dan informasi platform.
-- `login.html` — gerbang menuju aplikasi existing.
-- `config.js` — tempat mengisi URL Flutter Web setelah tersedia.
-- `styles.css`, `login.css`, `script.js`, `login.js` — tampilan dan interaksi.
+## Struktur
+- `index.html` — halaman utama.
+- `login.html` — formulir login web premium.
+- `config.js` — URL dan publishable key Supabase serta URL Flutter Web.
+- `login.js` — login email/nomor HP, validasi profil, sesi browser, dan reset password via email.
+- `styles.css`, `login.css`, `script.js` — tampilan dan interaksi.
 - `assets/mark.svg` — favicon.
 
-## Menghubungkan aplikasi
-1. Pastikan source Flutter existing lolos audit kompatibilitas web.
-2. Build dan deploy aplikasi Flutter Web ke alamat HTTPS tersendiri.
-3. Edit `config.js`, isi `APP_URL` dengan URL aplikasi yang benar-benar sudah aktif.
-4. Deploy ulang website ini. Tombol Login akan membuka aplikasi tersebut.
+## Konfigurasi Supabase
+`config.js` telah diisi memakai Project URL dan publishable key dari source Flutter AgencyPro terbaru yang diperiksa. Keduanya adalah nilai publik frontend, bukan service-role secret.
 
-Jangan mengisi `APP_URL` dengan URL perkiraan. Saat kosong, halaman login menampilkan status bahwa aplikasi belum dihubungkan.
+Pastikan Supabase Dashboard → Authentication → URL Configuration memiliki redirect URL berikut:
+`https://tkp-agencypro.pages.dev/login.html`
 
-## Deploy gratis melalui Cloudflare Pages
-1. Buat repository GitHub baru, misalnya `tkp-agencypro-website`.
-2. Upload seluruh isi folder ini ke root repository (file `index.html` harus berada di root).
-3. Di Cloudflare Dashboard, buka Workers & Pages → Create → Pages → Connect to Git.
-4. Pilih repository tersebut.
-5. Framework preset: None. Build command: kosong. Build output directory: `/` (root sesuai pengaturan Cloudflare Pages; jika antarmuka meminta direktori output, gunakan folder yang berisi `index.html`).
-6. Deploy. Cloudflare akan memberikan subdomain `*.pages.dev`.
+Tambahkan juga domain produksi lain bila nanti dipakai. Redirect ini diperlukan untuk alur reset password.
 
-## Catatan integrasi aplikasi
-Folder ini tidak mengubah Flutter, Supabase, konfigurasi database, atau file audio aplikasi. Build Flutter Web belum termasuk dalam paket website ini dan perlu audit terpisah, khususnya untuk secure storage, local authentication, penggunaan `dart:io`, image picker, dan audio.
+Login web menerima email atau nomor HP. Validasi profil mengikuti aplikasi Flutter: tabel `profiles`, kolom `full_name, role, approval_status, is_active`; akun harus approved, aktif, dan role termasuk super_admin, ceo, admin, owner, spg, atau tl. Kebijakan RLS harus mengizinkan pengguna terautentikasi membaca profil miliknya sendiri. Jangan menonaktifkan RLS.
+
+## Batas SSO lintas Android dan website
+Login web memakai akun Supabase yang sama dan menyimpan sesi pada browser website. APK menggunakan penyimpanan sesi native yang aman (Flutter Secure Storage). Browser dan aplikasi Android memiliki penyimpanan terpisah; login di browser tidak otomatis membuat APK login, dan sebaliknya.
+
+SSO lintas aplikasi membutuhkan implementasi callback/deep-link satu kali pakai di source Flutter, validasi state/PKCE, dan handoff kredensial yang aman. Jangan menaruh access token atau refresh token pada query string URL. Paket ini belum mengklaim SSO lintas perangkat selesai; ini adalah fondasi login web dengan autentikasi dan pemeriksaan akun yang sama.
+
+`APP_URL` dibiarkan kosong sampai alamat Flutter Web benar-benar tersedia. Mengisi APP_URL saja tidak membagikan sesi.
+
+## Keamanan
+- Jangan memasukkan service_role key, secret key, atau password database ke frontend.
+- Role dan company context harus tetap diverifikasi backend/RLS; jangan mempercayai nilai dari browser.
+- Sesi web hanya berlaku pada origin browser ini; logout web tidak otomatis logout APK.
+
+## Deploy Cloudflare Pages
+File `index.html` berada di root project. Framework preset `None`; Build output directory `.`. Build command `exit 0` dapat dipakai untuk konfigurasi statis yang sebelumnya memerlukan perintah build.
