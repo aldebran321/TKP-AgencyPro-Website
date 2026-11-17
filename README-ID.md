@@ -1,43 +1,41 @@
-# TKP AgencyPro Official Website — Web Login
+# TKP AgencyPro Website — Role Workspace
 
-Website pemasaran statis dengan tema Midnight Navy, Champagne Gold, Premium Glass, dan Ivory. Login web memakai project Supabase yang sama dengan aplikasi Flutter AgencyPro.
+Website statis ini menggunakan Supabase project yang sama dengan aplikasi Flutter TKP AgencyPro. File Flutter yang diberikan dipakai sebagai acuan pemetaan role; file Flutter dan database tidak diubah.
 
-## Struktur
-- `index.html` — halaman utama.
-- `login.html` — formulir login web premium dengan latar Midnight Navy.
-- `dashboard.html` — dashboard website setelah login berhasil.
-- `dashboard.js`, `dashboard.css` — pemeriksaan sesi/profil dan tampilan dashboard.
-- `config.js` — URL dan publishable key Supabase serta URL Flutter Web.
-- `login.js` — login email/nomor HP, validasi profil, redirect dashboard, sesi browser, dan reset password via email.
-- `styles.css`, `login.css`, `script.js` — tampilan dan interaksi.
-- `assets/mark.svg` — favicon.
+## Pemetaan role sesuai `lib/main.dart` Flutter
 
-## Konfigurasi Supabase
-`config.js` telah diisi memakai Project URL dan publishable key dari source Flutter AgencyPro terbaru yang diperiksa. Keduanya adalah nilai publik frontend, bukan service-role secret.
+| Role di `profiles.role` | Workspace website | Perilaku di Flutter |
+|---|---|---|
+| `super_admin` | ECC — Executive Command Center | `SuperAdminDashboard` |
+| `ceo` | CEO | `CEODashboard` |
+| `admin` | CEO | `CEODashboard` |
+| `owner` | CEO | `CEODashboard` |
+| `tl` | Team Leader | `TeamLeaderDashboard` |
+| `spg` | SPG | `SPGDashboard` |
 
-Pastikan Supabase Dashboard → Authentication → URL Configuration memiliki redirect URL berikut:
-`https://tkp-agencypro.pages.dev/login.html`
+Role ECC adalah nama tampilan; nilai role database yang digunakan aplikasi Flutter adalah `super_admin`.
 
-Tambahkan juga domain produksi lain bila nanti dipakai. Redirect ini diperlukan untuk alur reset password.
+## Status implementasi website
 
-Login web menerima email atau nomor HP. Validasi profil mengikuti aplikasi Flutter: tabel `profiles`, kolom `full_name, role, approval_status, is_active`; akun harus approved, aktif, dan role termasuk super_admin, ceo, admin, owner, spg, atau tl. Kebijakan RLS harus mengizinkan pengguna terautentikasi membaca profil miliknya sendiri. Jangan menonaktifkan RLS.
+- Login Supabase email/nomor HP dan validasi `approval_status=approved`, `is_active=true`, serta allowlist role.
+- Login berhasil diarahkan ke `dashboard.html`; dashboard memeriksa ulang sesi dan profil.
+- ECC: workspace dan menu Overview, CEO Monitoring, Companies, Security, Support. Ringkasan overview menggunakan tabel/kolom yang sama dengan query dashboard ECC Flutter (`profiles`, `companies`, `daily_sales`, `attendance`). Daftar perusahaan hanya menampilkan baris yang dapat dibaca oleh sesi berdasarkan RLS.
+- CEO: dashboard web yang sudah ada dipertahankan.
+- TL: workspace dan enam menu sesuai `TeamLeaderDashboard` Flutter: Laporan Tim, Mengelola Anggota, Absensi Anggota, Aktivitas Penjualan, Target Tim, Pesan/Chat. Halaman operasional TL masih perlu porting; saat ini tiap menu menjelaskan status integrasinya dan tidak mengarang data atau tindakan.
+- SPG: dashboard web yang sudah ada dipertahankan.
 
-## Batas SSO lintas Android dan website
-Login web memakai akun Supabase yang sama dan menyimpan sesi pada browser website. APK menggunakan penyimpanan sesi native yang aman (Flutter Secure Storage). Browser dan aplikasi Android memiliki penyimpanan terpisah; login di browser tidak otomatis membuat APK login, dan sebaliknya.
+## Batasan yang harus diketahui
 
-SSO lintas aplikasi membutuhkan implementasi callback/deep-link satu kali pakai di source Flutter, validasi state/PKCE, dan handoff kredensial yang aman. Jangan menaruh access token atau refresh token pada query string URL. Paket ini belum mengklaim SSO lintas perangkat selesai; ini adalah fondasi login web dengan autentikasi dan pemeriksaan akun yang sama.
+1. ECC dan TL sekarang sudah dipetakan ke workspace yang benar, tetapi belum semua halaman dan aksi Flutter dipindahkan ke website. Menu yang belum dipindahkan ditandai secara eksplisit.
+2. ECC menggunakan query global yang sama dengan Flutter. Keberhasilan baca tetap bergantung pada Supabase RLS untuk sesi `super_admin`.
+3. Jangan menonaktifkan RLS atau menaruh `service_role` key di browser. Menyembunyikan menu di frontend bukan pengganti otorisasi database.
+4. Website dan Android berbagi backend, tetapi sesi login browser dan aplikasi Android tetap terpisah.
+5. Login live memakai akun ECC, CEO, TL, dan SPG belum diuji dari lingkungan ini. Uji di deployment setelah ZIP diunggah.
 
-`APP_URL` dibiarkan kosong sampai alamat Flutter Web benar-benar tersedia. Mengisi APP_URL saja tidak membagikan sesi.
+## Konfigurasi
 
-## Keamanan
-- Jangan memasukkan service_role key, secret key, atau password database ke frontend.
-- Role dan company context harus tetap diverifikasi backend/RLS; jangan mempercayai nilai dari browser.
-- Sesi web hanya berlaku pada origin browser ini; logout web tidak otomatis logout APK.
+Isi `config.js` dengan Supabase URL dan anon/publishable key dari project TKP AgencyPro yang sama. Jangan pernah memasukkan `service_role` key ke frontend.
 
-## Deploy Cloudflare Pages
-File `index.html` berada di root project. Framework preset `None`; Build output directory `.`. Build command `exit 0` dapat dipakai untuk konfigurasi statis yang sebelumnya memerlukan perintah build.
+## Deploy manual
 
-## Alur dashboard website
-Setelah Supabase Auth berhasil dan profil pada tabel `profiles` lolos pemeriksaan `approval_status`, `is_active`, dan role yang diizinkan, website mengarahkan pengguna ke `dashboard.html`. Dashboard memeriksa ulang sesi dan profil sebelum menampilkan nama, email/nomor akun, serta role. Tombol Keluar mengakhiri sesi website.
-
-Kartu modul pada dashboard adalah fondasi tampilan, bukan klaim bahwa fitur analitik, pengelolaan tim, atau Multi Company telah terhubung ke tabel operasional. Tidak ada perubahan skema database, kebijakan RLS, maupun file aplikasi Android dalam paket ini.
+Unggah isi folder `tkp-agencypro-website-v1` ke repository Cloudflare Pages/GitHub sesuai struktur deployment yang sudah digunakan. Jangan mengubah project Supabase atau aplikasi Flutter untuk pembaruan website ini.
